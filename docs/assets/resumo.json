@@ -1,0 +1,423 @@
+{
+ "n_registros": 104307,
+ "n_escolas": 25022,
+ "n_municipios": 5432,
+ "n_por_ano": {
+  "2009": 17937,
+  "2010": 19416,
+  "2011": 10077,
+  "2012": 11522,
+  "2013": 14117,
+  "2014": 15640,
+  "2015": 15598
+ },
+ "n_por_dep": {
+  "Estadual": 63210,
+  "Federal": 1634,
+  "Municipal": 968,
+  "Privada": 38495
+ },
+ "participantes_total": 5876167,
+ "rq1_evolucao": [
+  {
+   "ano": 2009,
+   "Privada": 595.4,
+   "Pública": 497.6,
+   "gap": 97.8
+  },
+  {
+   "ano": 2010,
+   "Privada": 601.1,
+   "Pública": 508.5,
+   "gap": 92.6
+  },
+  {
+   "ano": 2011,
+   "Privada": 584.2,
+   "Pública": 495.2,
+   "gap": 89.0
+  },
+  {
+   "ano": 2012,
+   "Privada": 581.4,
+   "Pública": 489.4,
+   "gap": 92.0
+  },
+  {
+   "ano": 2013,
+   "Privada": 579.7,
+   "Pública": 490.5,
+   "gap": 89.3
+  },
+  {
+   "ano": 2014,
+   "Privada": 581.7,
+   "Pública": 490.6,
+   "gap": 91.1
+  },
+  {
+   "ano": 2015,
+   "Privada": 586.4,
+   "Pública": 499.9,
+   "gap": 86.5
+  }
+ ],
+ "rq1_gap_min": 86.5,
+ "rq1_gap_max": 97.8,
+ "rq1_gap_2015": 86.5,
+ "rq1_quartis_2015": [
+  {
+   "dependencia": "Estadual",
+   "0.25": 475.2,
+   "0.5": 490.9,
+   "0.75": 506.3
+  },
+  {
+   "dependencia": "Federal",
+   "0.25": 540.6,
+   "0.5": 568.4,
+   "0.75": 599.8
+  },
+  {
+   "dependencia": "Municipal",
+   "0.25": 499.2,
+   "0.5": 516.1,
+   "0.75": 539.4
+  },
+  {
+   "dependencia": "Privada",
+   "0.25": 537.0,
+   "0.5": 565.0,
+   "0.75": 598.7
+  }
+ ],
+ "rq1_n_2015": {
+  "Estadual": 8836,
+  "Federal": 328,
+  "Municipal": 109,
+  "Privada": 6325
+ },
+ "rq1_pct_pub_acima_med_priv": 3.8,
+ "rq1_pct_fed_acima_med_priv": 55.2,
+ "rq2_inse_rede": [
+  {
+   "inse": "Grupo 1",
+   "rede": "Privada",
+   "mean": 504.1,
+   "count": 27
+  },
+  {
+   "inse": "Grupo 1",
+   "rede": "Pública",
+   "mean": 466.8,
+   "count": 980
+  },
+  {
+   "inse": "Grupo 2",
+   "rede": "Privada",
+   "mean": 506.7,
+   "count": 80
+  },
+  {
+   "inse": "Grupo 2",
+   "rede": "Pública",
+   "mean": 480.0,
+   "count": 1310
+  },
+  {
+   "inse": "Grupo 3",
+   "rede": "Privada",
+   "mean": 527.5,
+   "count": 830
+  },
+  {
+   "inse": "Grupo 3",
+   "rede": "Pública",
+   "mean": 491.6,
+   "count": 3915
+  },
+  {
+   "inse": "Grupo 4",
+   "rede": "Privada",
+   "mean": 548.7,
+   "count": 1284
+  },
+  {
+   "inse": "Grupo 4",
+   "rede": "Pública",
+   "mean": 509.4,
+   "count": 2527
+  },
+  {
+   "inse": "Grupo 5",
+   "rede": "Privada",
+   "mean": 572.4,
+   "count": 2734
+  },
+  {
+   "inse": "Grupo 5",
+   "rede": "Pública",
+   "mean": 545.8,
+   "count": 524
+  },
+  {
+   "inse": "Grupo 6",
+   "rede": "Privada",
+   "mean": 617.2,
+   "count": 1369
+  },
+  {
+   "inse": "Grupo 6",
+   "rede": "Pública",
+   "mean": 640.5,
+   "count": 17
+  }
+ ],
+ "rq2_inse_geral": {
+  "Grupo 1": 467.8,
+  "Grupo 2": 481.6,
+  "Grupo 3": 497.9,
+  "Grupo 4": 522.6,
+  "Grupo 5": 568.1,
+  "Grupo 6": 617.5
+ },
+ "rq2_inse_dist_rede": {
+  "Privada": {
+   "Grupo 1": 0.4,
+   "Grupo 2": 1.3,
+   "Grupo 3": 13.1,
+   "Grupo 4": 20.3,
+   "Grupo 5": 43.2,
+   "Grupo 6": 21.6
+  },
+  "Pública": {
+   "Grupo 1": 10.6,
+   "Grupo 2": 14.1,
+   "Grupo 3": 42.2,
+   "Grupo 4": 27.3,
+   "Grupo 5": 5.7,
+   "Grupo 6": 0.2
+  }
+ },
+ "rq2_corr_docente": {
+  "Pública": 0.357,
+  "Privada": 0.344
+ },
+ "rq2_corr_docente_total": 0.252,
+ "rq2_corr_inse": 0.777,
+ "rq2_corr_inse_rede": {
+  "Pública": 0.581,
+  "Privada": 0.637
+ },
+ "rq3_regiao": [
+  {
+   "regiao": "Centro-Oeste",
+   "Privada": 587.1,
+   "Pública": 495.9,
+   "gap": 91.2
+  },
+  {
+   "regiao": "Nordeste",
+   "Privada": 575.8,
+   "Pública": 483.8,
+   "gap": 92.0
+  },
+  {
+   "regiao": "Norte",
+   "Privada": 566.4,
+   "Pública": 485.4,
+   "gap": 81.0
+  },
+  {
+   "regiao": "Sudeste",
+   "Privada": 594.8,
+   "Pública": 513.5,
+   "gap": 81.3
+  },
+  {
+   "regiao": "Sul",
+   "Privada": 585.0,
+   "Pública": 511.2,
+   "gap": 73.8
+  }
+ ],
+ "rq3_uf_top": [
+  {
+   "uf": "PR",
+   "Privada": 580.9,
+   "Pública": 516.7,
+   "gap": 64.2
+  },
+  {
+   "uf": "SP",
+   "Privada": 588.1,
+   "Pública": 516.4,
+   "gap": 71.7
+  },
+  {
+   "uf": "MG",
+   "Privada": 621.9,
+   "Pública": 514.5,
+   "gap": 107.4
+  },
+  {
+   "uf": "RJ",
+   "Privada": 590.5,
+   "Pública": 512.1,
+   "gap": 78.4
+  },
+  {
+   "uf": "RS",
+   "Privada": 589.8,
+   "Pública": 511.0,
+   "gap": 78.8
+  }
+ ],
+ "rq3_uf_bottom": [
+  {
+   "uf": "AL",
+   "Privada": 541.1,
+   "Pública": 481.6,
+   "gap": 59.5
+  },
+  {
+   "uf": "PI",
+   "Privada": 581.6,
+   "Pública": 479.5,
+   "gap": 102.1
+  },
+  {
+   "uf": "MA",
+   "Privada": 555.0,
+   "Pública": 479.1,
+   "gap": 75.9
+  },
+  {
+   "uf": "TO",
+   "Privada": 575.2,
+   "Pública": 478.1,
+   "gap": 97.1
+  },
+  {
+   "uf": "CE",
+   "Privada": 592.5,
+   "Pública": 474.8,
+   "gap": 117.7
+  }
+ ],
+ "rq3_uf_gap_max": [
+  {
+   "uf": "PI",
+   "Privada": 581.6,
+   "Pública": 479.5,
+   "gap": 102.1
+  },
+  {
+   "uf": "MG",
+   "Privada": 621.9,
+   "Pública": 514.5,
+   "gap": 107.4
+  },
+  {
+   "uf": "CE",
+   "Privada": 592.5,
+   "Pública": 474.8,
+   "gap": 117.7
+  }
+ ],
+ "rq3_uf_gap_min": [
+  {
+   "uf": "AL",
+   "Privada": 541.1,
+   "Pública": 481.6,
+   "gap": 59.5
+  },
+  {
+   "uf": "RO",
+   "Privada": 558.2,
+   "Pública": 496.1,
+   "gap": 62.1
+  },
+  {
+   "uf": "PR",
+   "Privada": 580.9,
+   "Pública": 516.7,
+   "gap": 64.2
+  }
+ ],
+ "rq3_zona": [
+  {
+   "regiao": "Centro-Oeste",
+   "Rural": 497.9,
+   "Urbana": 495.9,
+   "dif": -2.0
+  },
+  {
+   "regiao": "Nordeste",
+   "Rural": 481.5,
+   "Urbana": 483.9,
+   "dif": 2.4
+  },
+  {
+   "regiao": "Norte",
+   "Rural": 479.9,
+   "Urbana": 485.6,
+   "dif": 5.7
+  },
+  {
+   "regiao": "Sudeste",
+   "Rural": 519.1,
+   "Urbana": 513.4,
+   "dif": -5.7
+  },
+  {
+   "regiao": "Sul",
+   "Rural": 506.1,
+   "Urbana": 511.4,
+   "dif": 5.3
+  }
+ ],
+ "rq3_zona_n": {
+  "Rural": 513,
+  "Urbana": 8760
+ },
+ "rq3_corr_abandono_pub": -0.338,
+ "rq3_abandono_quartis": [
+  {
+   "x": 0.0,
+   "y": 504.3
+  },
+  {
+   "x": 1.1,
+   "y": 500.8
+  },
+  {
+   "x": 2.4,
+   "y": 495.5
+  },
+  {
+   "x": 3.8,
+   "y": 492.8
+  },
+  {
+   "x": 5.4,
+   "y": 491.6
+  },
+  {
+   "x": 7.3,
+   "y": 488.0
+  },
+  {
+   "x": 9.5,
+   "y": 485.9
+  },
+  {
+   "x": 12.3,
+   "y": 482.1
+  },
+  {
+   "x": 18.0,
+   "y": 479.4
+  }
+ ]
+}

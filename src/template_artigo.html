@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Duas escolas, um exame: desigualdade de desempenho no ENEM entre redes pública e privada (2009–2015)</title>
+<meta name="description" content="Artigo acadêmico com análise exploratória dos Microdados do ENEM por Escola (INEP, 2009-2015), produzido na disciplina Linguagem de Programação — Análise e Visualização de Dados com Python.">
+<meta name="author" content="Gabryel Duarte Pessanha; Esther Corte Real — Unilasalle">
+<meta name="keywords" content="ENEM, educação básica, desigualdade educacional, INSE, dados abertos, FAIR, Python, pandas, Plotly">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+<style>
+:root{
+  color-scheme:light;
+  --paper:#FFFFFF; --paper-2:#F3F5F8; --ink:#1C2430; --ink-2:#4A5563; --rule:#D5DAE1;
+  --pub:#1F5F8B; --priv:#C8781A; --pub-soft:#E3EDF5; --priv-soft:#F8EBDC;
+  --code-bg:#F3F5F8; --max:72ch;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#131920; --paper-2:#1B232D; --ink:#E7EBF0; --ink-2:#AEB7C2; --rule:#2E3844;
+    --pub:#6FAEDB; --priv:#E5A25A; --pub-soft:#1C2F3F; --priv-soft:#3A2A17; --code-bg:#1B232D;
+  }
+}
+*{box-sizing:inherit}
+html{scroll-behavior:smooth; scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0; background:var(--paper); color:var(--ink); font-family:"Source Serif 4", Georgia, "Times New Roman", serif;
+  font-size:1.0625rem; line-height:1.65; -webkit-font-smoothing:antialiased}
+a{color:var(--pub)} a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:3px solid var(--priv); outline-offset:2px}
+
+header.cabecalho{border-bottom:1px solid var(--rule); padding:3.5rem 1.25rem 2.5rem}
+.cabecalho .miolo{max-width:var(--max); margin:0 auto}
+.cabecalho .disciplina{color:var(--ink-2); font-size:.95rem; margin:0 0 1.25rem}
+.cabecalho h1{font-size:clamp(1.9rem,4.5vw,2.9rem); line-height:1.12; font-weight:700; letter-spacing:-.01em; margin:0 0 1.5rem; text-wrap:balance}
+.autores{margin:0; padding:0; list-style:none; display:flex; flex-wrap:wrap; gap:.4rem 2rem}
+.autores li{font-size:1.05rem} .autores small{display:block; color:var(--ink-2); font-size:.9rem}
+.badges{display:flex; flex-wrap:wrap; gap:.5rem; margin:1.6rem 0 0; align-items:center}
+.badge{display:inline-flex; align-items:center; gap:.35em; font-family:ui-sans-serif,system-ui,sans-serif; font-size:.78rem; line-height:1; padding:.42em .7em; border-radius:4px; border:1px solid var(--rule); color:var(--ink-2); background:var(--paper-2); text-decoration:none}
+.badge b{color:var(--ink); font-weight:600}
+.btn-repo{display:inline-flex; align-items:center; gap:.5em; font-family:ui-sans-serif,system-ui,sans-serif; font-size:.9rem; font-weight:600; color:#fff; background:var(--pub); padding:.6em 1em; border-radius:6px; text-decoration:none; margin-top:1.4rem}
+.btn-repo svg{width:1.1em; height:1.1em; fill:currentColor}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .btn-repo{color:#0E1A24} }
+
+.pagina{max-width:calc(var(--max) + 18rem); margin:0 auto; padding:0 1.25rem; display:grid; grid-template-columns:1fr; gap:0 3rem}
+@media (min-width:1080px){ .pagina{grid-template-columns:15rem minmax(0,var(--max))} }
+nav.sumario{display:none}
+@media (min-width:1080px){
+  nav.sumario{display:block; position:sticky; top:2rem; align-self:start; padding-top:2.5rem; font-family:ui-sans-serif,system-ui,sans-serif; font-size:.85rem}
+  nav.sumario ol{list-style:none; margin:0; padding:0; border-left:2px solid var(--rule)}
+  nav.sumario li a{display:block; padding:.3em .9em; color:var(--ink-2); text-decoration:none; border-left:2px solid transparent; margin-left:-2px}
+  nav.sumario li a:hover, nav.sumario li a.ativo{color:var(--ink); border-left-color:var(--priv)}
+}
+main{min-width:0; padding:2.5rem 0 5rem}
+section{margin:0 0 3rem} h2{font-size:1.6rem; line-height:1.2; margin:0 0 1rem; letter-spacing:-.005em}
+h3{font-size:1.2rem; margin:2rem 0 .6rem} p{margin:0 0 1.1rem} p+h3{margin-top:1.6rem}
+.resumo{background:var(--paper-2); border-left:4px solid var(--pub); padding:1.25rem 1.5rem; margin:0 0 1.5rem}
+.resumo h2{font-size:1.1rem; margin-bottom:.6rem}
+.palavras{font-family:ui-sans-serif,system-ui,sans-serif; font-size:.9rem; color:var(--ink-2)}
+.rq{margin:1.2rem 0; padding:0; list-style:none; counter-reset:rq}
+.rq li{position:relative; padding:.75rem 1rem .75rem 4.4rem; border:1px solid var(--rule); border-radius:6px; margin-bottom:.6rem}
+.rq li::before{counter-increment:rq; content:"RQ" counter(rq); position:absolute; left:1rem; top:.8rem; font-family:ui-sans-serif,system-ui,sans-serif; font-weight:700; font-size:.85rem; color:var(--priv)}
+.rq li[data-tag]::after{content:attr(data-tag); position:absolute; right:.9rem; top:-.6rem; font-family:ui-sans-serif,system-ui,sans-serif; font-size:.72rem; color:var(--ink-2); background:var(--paper); padding:0 .4em}
+
+figure{margin:1.8rem 0 2rem}
+figure img{display:block; width:100%; max-width:100%; height:auto; border:1px solid var(--rule); border-radius:4px; background:#fff}
+figcaption{font-family:ui-sans-serif,system-ui,sans-serif; font-size:.86rem; color:var(--ink-2); line-height:1.5; margin-top:.6rem}
+figcaption b{color:var(--ink); font-weight:600}
+.plot{width:100%; min-height:380px; border:1px solid var(--rule); border-radius:4px; padding:.25rem; background:var(--paper)}
+.tabela{overflow-x:auto; margin:1.5rem 0}
+table{border-collapse:collapse; width:100%; font-family:ui-sans-serif,system-ui,sans-serif; font-size:.9rem}
+th,td{padding:.5em .7em; border-bottom:1px solid var(--rule); text-align:left; white-space:nowrap} th{font-weight:600; border-bottom:2px solid var(--ink-2)}
+td.num,th.num{text-align:right; font-variant-numeric:tabular-nums}
+.pub{color:var(--pub); font-weight:600} .priv{color:var(--priv); font-weight:600}
+.destaque{display:grid; grid-template-columns:repeat(auto-fit,minmax(10rem,1fr)); gap:.8rem; margin:1.4rem 0}
+.destaque div{padding:.9rem 1rem; border-radius:6px} .destaque .a{background:var(--pub-soft)} .destaque .b{background:var(--priv-soft)}
+.destaque strong{display:block; font-size:1.7rem; line-height:1.1; font-variant-numeric:tabular-nums} .destaque span{font-family:ui-sans-serif,system-ui,sans-serif; font-size:.82rem; color:var(--ink-2)}
+
+pre{background:var(--code-bg); border:1px solid var(--rule); border-radius:6px; padding:1rem 1.2rem; overflow-x:auto; font-size:.84rem; line-height:1.55; margin:1rem 0 1.4rem}
+code{font-family:ui-monospace,"Cascadia Code",Menlo,Consolas,monospace} p code,li code,td code{background:var(--code-bg); padding:.1em .35em; border-radius:3px; font-size:.9em}
+.arvore{font-size:.82rem}
+
+.fair{display:grid; grid-template-columns:repeat(auto-fit,minmax(14rem,1fr)); gap:1rem; margin:1.2rem 0 1.6rem}
+.fair div{border:1px solid var(--rule); border-top:3px solid var(--pub); border-radius:4px; padding:.9rem 1rem; font-size:.95rem}
+.fair div:nth-child(even){border-top-color:var(--priv)} .fair h3{margin:0 0 .4rem; font-size:1.05rem}
+.fair ul{margin:0; padding-left:1.1rem} .fair li{margin-bottom:.25em}
+
+.refs{padding-left:0; list-style:none} .refs li{padding-left:2rem; text-indent:-2rem; margin-bottom:.7rem; font-size:.95rem}
+footer{border-top:1px solid var(--rule); padding:1.5rem 1.25rem 2.5rem; font-family:ui-sans-serif,system-ui,sans-serif; font-size:.82rem; color:var(--ink-2); text-align:center}
+@media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
+</style>
+</head>
+<body>
+
+<header class="cabecalho">
+  <div class="miolo">
+    <p class="disciplina">Unilasalle · Bacharelado em Sistemas de Informação, 6º período · Linguagem de Programação: Análise e Visualização de Dados com Python · Projeto Final 2026/2 · Professor: Alexandre Louzada</p>
+    <h1>Duas escolas, um exame: desigualdade de desempenho no ENEM entre as redes pública e privada no Brasil (2009–2015)</h1>
+    <ul class="autores">
+      <li>Gabryel Duarte Pessanha<small>Unilasalle — Sistemas de Informação</small></li>
+      <li>Esther Corte Real<small>Unilasalle — Sistemas de Informação</small></li>
+    </ul>
+    <div class="badges">
+      <span class="badge">Dados: <b>INEP — ENEM por Escola</b></span>
+      <span class="badge">Período: <b>2009–2015</b></span>
+      <span class="badge">Registros: <b>{{N_REG}}</b></span>
+      <span class="badge">Código: <b>MIT</b></span>
+      <span class="badge">Texto e dados: <b>CC BY 4.0</b></span>
+      <span class="badge">Python: <b>3.12 · pandas · Plotly</b></span>
+      <span class="badge"><b>FAIR</b> compliant</span>
+    </div>
+    <a class="btn-repo" href="{{REPO_URL}}" rel="noopener">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      Ver repositório no GitHub
+    </a>
+  </div>
+</header>
+
+<div class="pagina">
+<nav class="sumario" aria-label="Sumário">
+  <ol>
+    <li><a href="#resumo">Resumo</a></li>
+    <li><a href="#introducao">1. Introdução</a></li>
+    <li><a href="#metodologia">2. Metodologia e pipeline</a></li>
+    <li><a href="#resultados">3. Resultados e discussão</a></li>
+    <li><a href="#conclusao">4. Conclusão</a></li>
+    <li><a href="#fair">5. Dados e declaração FAIR</a></li>
+    <li><a href="#referencias">6. Referências</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<section id="resumo" class="resumo">
+  <h2>Resumo</h2>
+  <p>O ENEM é a principal porta de entrada do ensino superior brasileiro e, desde 2009, seus resultados agregados por escola permitem comparar instituições de todo o país. Este estudo analisa os Microdados do ENEM por Escola publicados pelo INEP para investigar a desigualdade de desempenho entre as redes pública e privada entre 2009 e 2015. Construímos um pipeline determinístico em Python (pandas e pyarrow) que trata codificação, separadores, tipos e valores ausentes do arquivo original, produzindo uma base de {{N_REG}} registros de {{N_ESC}} escolas. A análise exploratória combinou médias ponderadas por participantes, quartis, correlações de Spearman e visualizações estáticas e interativas (Matplotlib e Plotly). Os achados mostram uma diferença estável de 86 a 98 pontos entre as redes ao longo de todo o período; o nível socioeconômico dos alunos (INSE) é o indicador mais fortemente associado ao desempenho (ρ = {{CORR_INSE}}), e escolas públicas de INSE elevado igualam as privadas. A formação docente apresenta associação positiva moderada dentro de cada rede (ρ ≈ 0,35), e o abandono escolar associa-se negativamente à nota. As diferenças regionais e urbano/rural são bem menores que a diferença entre redes. Os resultados reforçam que a desigualdade de desempenho reflete, em grande medida, a desigualdade socioeconômica de origem dos estudantes. Todo o pipeline é público e reproduzível.</p>
+  <p class="palavras"><b>Palavras-chave:</b> ENEM; desigualdade educacional; nível socioeconômico; dados abertos; análise exploratória de dados; Python.</p>
+</section>
+
+<section id="introducao">
+  <h2>1. Introdução</h2>
+  <p>Mais de cinco milhões de estudantes concluintes do ensino médio participaram do ENEM entre 2009 e 2015 nas escolas cobertas por este estudo. O exame é usado para o acesso a universidades públicas (SiSU), bolsas (ProUni) e financiamento (FIES), de modo que o desempenho de uma escola no ENEM tem consequências diretas sobre as oportunidades de seus alunos. Durante esse período, o INEP divulgou anualmente as médias por escola — uma prática encerrada em 2015 justamente por críticas de que os números eram lidos como <em>ranking</em> sem considerar o contexto socioeconômico de cada instituição (INEP, 2016).</p>
+  <p>Essa controvérsia motiva o presente trabalho. Em vez de ordenar escolas, usamos a série histórica completa para perguntar <em>o que</em> está associado ao desempenho: a rede de ensino, o perfil socioeconômico dos alunos, a formação dos professores, o território ou a capacidade da escola de manter seus estudantes matriculados. A base reúne, para cada escola e ano, as médias nas cinco áreas do exame e indicadores de contexto do Censo Escolar, o que a torna adequada para uma análise exploratória orientada por perguntas.</p>
+  <p>Definimos três perguntas de pesquisa:</p>
+  <ol class="rq">
+    <li data-tag="evolução">Como evoluiu o desempenho das escolas públicas e privadas no ENEM entre 2009 e 2015 e qual é o tamanho da diferença entre as redes?</li>
+    <li data-tag="contexto">Em que medida o nível socioeconômico dos alunos (INSE) e a formação dos docentes se associam ao desempenho das escolas?</li>
+    <li data-tag="território">Como o desempenho varia entre regiões, unidades federativas e zonas urbana/rural, e qual é sua relação com o abandono escolar?</li>
+  </ol>
+</section>
+
+<section id="metodologia">
+  <h2>2. Metodologia e pipeline de dados</h2>
+  <h3>2.1 Fonte e granularidade</h3>
+  <p>A fonte primária é o conjunto <em>Microdados do ENEM por Escola</em>, publicado pelo INEP no portal de dados abertos do governo federal sob licença aberta. Trata-se de um único arquivo CSV com 172.305 linhas e 27 colunas cobrindo os anos de 2005 a 2015. A unidade de observação é o par <em>escola × ano</em>: cada linha traz a média dos participantes daquela escola em cada área do exame, além de indicadores do Censo Escolar (matrículas, dependência administrativa, localização, taxas de aprovação, reprovação e abandono) e, nos anos finais, o percentual de docentes com formação adequada (2013–2015) e o Indicador de Nível Socioeconômico — INSE (2015).</p>
+
+  <h3>2.2 Parsing e tratamento</h3>
+  <p>O arquivo exigiu três cuidados de leitura: codificação ISO-8859-1 (acentos de nomes de municípios e escolas), separador <code>;</code> e leitura inicial de todas as colunas como texto para auditar inconsistências antes da conversão de tipos. As decisões de tratamento foram:</p>
+  <div class="tabela"><table>
+    <thead><tr><th>Situação encontrada</th><th>Decisão</th><th>Justificativa</th></tr></thead>
+    <tbody>
+      <tr><td>Anos 2005–2008 sem médias por área</td><td>Descarte (67.998 linhas)</td><td>O ENEM anterior a 2009 tinha outra matriz e escala; não é comparável</td></tr>
+      <tr><td>INSE presente só em 2015; formação docente só em 2013–2015</td><td>Mantidos como <code>NaN</code></td><td>Ausência estrutural, não erro; análises restritas aos anos cobertos</td></tr>
+      <tr><td>INSE codificado como texto ("Grupo 1" … "Grupo 6")</td><td>Categoria ordinal + versão numérica <code>inse_num</code></td><td>Permite correlação de Spearman preservando a ordem</td></tr>
+      <tr><td>Participantes maiores que matrículas (762 linhas)</td><td>Mantidos e marcados em <code>flag_inconsistencia</code></td><td>Rastreabilidade: nenhuma exclusão silenciosa</td></tr>
+      <tr><td>Códigos numéricos de dependência e localização</td><td>Mapeados para rótulos (Federal, Estadual, Municipal, Privada; Urbana, Rural)</td><td>Legibilidade e tipos <code>category</code> mais eficientes</td></tr>
+    </tbody>
+  </table></div>
+  <p>Criamos duas métricas derivadas: <code>media_geral</code>, a média aritmética simples das cinco áreas, e <code>rede</code> (Pública = Federal + Estadual + Municipal; Privada). Todas as médias agregadas apresentadas neste artigo são <strong>ponderadas pelo número de participantes</strong> da escola, evitando que escolas minúsculas pesem tanto quanto escolas grandes. O trecho a seguir resume a lógica central de <code>src/etl.py</code>:</p>
+<pre><code>def extract(path=RAW_FILE):
+    with gzip.open(path, "rt", encoding="latin-1") as fh:
+        return pd.read_csv(fh, sep=";", dtype=str, na_values=["", " "])
+
+def transform(df):
+    df = df.rename(columns=RENAME)
+    df = _to_numeric(df, num_cols)
+    df["dependencia"] = df["dependencia_cod"].map(DEPENDENCIA).astype("category")
+    df["rede"] = np.where(df["dependencia"] == "Privada", "Privada", "Pública")
+    df["inse"] = pd.Categorical(df["inse"], categories=[f"Grupo {i}" for i in range(1, 7)], ordered=True)
+    df["media_geral"] = df[COLUNAS_NOTA].mean(axis=1, skipna=False).round(2)
+    df["tem_notas"] = df[COLUNAS_NOTA].notna().all(axis=1)
+    df = df[df["tem_notas"]]
+    df["flag_inconsistencia"] = df["participantes"] > df["matriculas"]
+    return df
+
+def media_por(df, por, col="media_geral"):
+    g = df.groupby(por, observed=True)
+    return g.apply(lambda x: np.average(x[col], weights=x["participantes"]))</code></pre>
+  <p>A base tratada ({{N_REG}} registros, {{N_ESC}} escolas distintas em {{N_MUN}} municípios) é persistida em <code>data/processed/enem_escolas.parquet</code> e, por redundância, em <code>enem_escolas.csv.gz</code>. As figuras são geradas por <code>src/figuras.py</code>, que também grava em <code>docs/assets/resumo.json</code> todos os números citados neste texto.</p>
+
+  <h3>2.3 Métodos de análise</h3>
+  <p>Utilizamos estatística descritiva (médias ponderadas, medianas, quartis), correlação de Spearman — por ser robusta a assimetrias e adequada ao INSE ordinal — e visualizações escolhidas segundo a pergunta: linhas para evolução temporal, boxplots para dispersão, barras agrupadas para comparar grupos, <em>dumbbell</em> para diferenças por UF e <em>hexbin</em> para relações com muitos pontos. Gráficos interativos usam Plotly 7; os estáticos, Matplotlib 3. A exploração completa está em <code>notebooks/analise_exploratoria.ipynb</code>.</p>
+</section>
+
+<section id="resultados">
+  <h2>3. Resultados e discussão</h2>
+
+  <h3>RQ1 — Uma diferença que não se fechou</h3>
+  <p>A Figura 1 mostra a média geral ponderada por rede em cada ano. A rede privada oscila entre 580 e 601 pontos e a pública entre 489 e 508; as duas séries sobem e descem quase em paralelo, o que sugere que as variações anuais refletem mudanças na prova (dificuldade, composição dos participantes) mais do que mudanças nas escolas. A diferença entre as redes variou de {{GAP_MIN}} a {{GAP_MAX}} pontos e fechou 2015 em {{GAP_2015}} — o menor valor da série, mas sem tendência clara de convergência.</p>
+  <figure>
+    <img src="assets/fig1_evolucao_rede.png" alt="Gráfico de linhas: média geral das escolas privadas entre 580 e 601 pontos e das públicas entre 489 e 508, de 2009 a 2015, com as duas linhas quase paralelas." loading="lazy">
+    <figcaption><b>Figura 1.</b> Média geral ponderada no ENEM por rede de ensino, 2009–2015. Fonte: INEP; elaboração própria.</figcaption>
+  </figure>
+  <p>O gráfico interativo abaixo abre essa evolução por área e por dependência administrativa. Dois padrões se destacam: Matemática é a área em que a diferença entre privadas e estaduais é maior, e as escolas <strong>federais</strong> (institutos e colégios de aplicação) acompanham — e em alguns anos superam — a rede privada.</p>
+  <figure>
+    <div id="plot1" class="plot" style="min-height:560px"></div>
+    <figcaption><b>Figura 2 (interativa).</b> Médias ponderadas por área do exame e dependência administrativa. Passe o cursor sobre os pontos; clique na legenda para isolar uma rede.</figcaption>
+  </figure>
+  <p>A média, porém, esconde a dispersão. Em 2015 a mediana das escolas privadas foi 565 pontos, contra 491 das estaduais; apenas <strong>{{PCT_PUB}}%</strong> das escolas públicas ficaram acima da mediana privada. Entre as federais, esse percentual sobe para <strong>{{PCT_FED}}%</strong>: metade delas supera a escola privada típica. A rede pública não é homogênea, e a dependência administrativa separa realidades muito distintas.</p>
+  <figure>
+    <div id="plot2" class="plot" style="min-height:430px"></div>
+    <figcaption><b>Figura 3 (interativa).</b> Distribuição da média geral das escolas por dependência administrativa, 2015 (n = {{N_MUNI}} municipais, {{N_EST}} estaduais, {{N_PRIV}} privadas, {{N_FED}} federais).</figcaption>
+  </figure>
+
+  <h3>RQ2 — O peso do contexto socioeconômico e da formação docente</h3>
+  <p>O INSE classifica as escolas em seis grupos conforme renda, escolaridade dos pais e bens dos alunos. Sua correlação com a média geral em 2015 é forte: ρ = {{CORR_INSE}} para o conjunto das escolas, {{CORR_INSE_PUB}} dentro da rede pública e {{CORR_INSE_PRIV}} dentro da privada. A Figura 4 mostra que, <em>fixado o grupo INSE</em>, a vantagem da rede privada cai de quase 90 para 26–40 pontos, e no grupo mais alto as poucas escolas públicas (17, quase todas federais) superam as privadas. A composição dos grupos explica boa parte da diferença bruta: {{PRIV_G56}}% das escolas privadas estão nos grupos 5 e 6, contra {{PUB_G56}}% das públicas.</p>
+  <figure>
+    <img src="assets/fig2_inse_rede.png" alt="Barras agrupadas: a média geral cresce monotonicamente do grupo INSE 1 ao 6 nas duas redes; a diferença entre redes diminui conforme o INSE sobe." loading="lazy">
+    <figcaption><b>Figura 4.</b> Média geral por grupo INSE e rede, 2015. Dentro de cada grupo a diferença entre redes é bem menor que a diferença bruta. Fonte: INEP; elaboração própria.</figcaption>
+  </figure>
+  <p>A formação docente tem efeito menor, mas consistente. O percentual de docentes com formação adequada correlaciona-se com a nota em ρ = {{CORR_DOC_PUB}} nas escolas públicas e {{CORR_DOC_PRIV}} nas privadas (2013–2015). Curiosamente, a correlação no conjunto ({{CORR_DOC_TOT}}) é menor que dentro de cada rede: as duas redes têm distribuições de formação docente parecidas (mediana ≈ 62%) mas níveis de nota muito diferentes, de modo que a mistura adiciona variação que a formação não explica. A Figura 5 mostra as duas retas de tendência, quase paralelas.</p>
+  <figure>
+    <div id="plot3" class="plot" style="min-height:470px"></div>
+    <figcaption><b>Figura 5 (interativa).</b> Percentual de docentes com formação adequada e média geral da escola. Amostra aleatória de 6.000 escolas com pelo menos 30 participantes (2013–2015); retas de mínimos quadrados por rede.</figcaption>
+  </figure>
+  <p>O mapa de correlações da Figura 6 resume o quadro de 2015: INSE, taxa de aprovação e taxa de participação associam-se positivamente à nota; abandono associa-se negativamente. Entre as áreas, Redação é a menos correlacionada com as demais, o que sugere que mede uma competência parcialmente distinta.</p>
+  <figure>
+    <div id="plot4" class="plot" style="min-height:520px"></div>
+    <figcaption><b>Figura 6 (interativa).</b> Correlação de Spearman entre indicadores das escolas, 2015.</figcaption>
+  </figure>
+
+  <h3>RQ3 — Território importa menos que rede; abandono importa</h3>
+  <p>Em 2015 as diferenças regionais existem, mas são modestas diante da diferença entre redes: a rede pública varia de 483,8 (Nordeste) a 513,5 pontos (Sudeste), uma amplitude de 30 pontos, enquanto a diferença pública–privada é de 74 (Sul) a 92 pontos (Nordeste) em todas as regiões. A Figura 7 detalha por UF: Paraná, São Paulo, Minas Gerais, Rio de Janeiro e Rio Grande do Sul lideram a rede pública; Ceará, Tocantins, Maranhão, Piauí e Alagoas fecham a lista. O Ceará combina a menor média pública com a maior diferença entre redes do país ({{GAP_CE}} pontos).</p>
+  <figure>
+    <div id="plot5" class="plot" style="min-height:720px"></div>
+    <figcaption><b>Figura 7 (interativa).</b> Média geral ponderada por UF e rede em 2015. Cada segmento liga a rede pública (azul) à privada (laranja) da mesma UF.</figcaption>
+  </figure>
+  <p>A localização da escola, por sua vez, quase não distingue desempenho dentro da rede pública: a diferença urbano–rural fica entre −5,7 e +5,7 pontos conforme a região, e no Sudeste e Centro-Oeste as escolas rurais pontuam ligeiramente acima das urbanas. Vale a ressalva de que só {{N_RURAL}} escolas rurais com participação no ENEM aparecem na base de 2015.</p>
+  <div class="tabela"><table>
+    <thead><tr><th>Região</th><th class="num">Pública urbana</th><th class="num">Pública rural</th><th class="num">Urbana − rural</th><th class="num">Privada</th><th class="num">Privada − pública</th></tr></thead>
+    <tbody>{{TABELA_REGIAO}}</tbody>
+  </table></div>
+  <p>Já o abandono escolar — a proporção de matriculados no ensino médio que deixaram a escola no ano — tem relação clara com a nota nas escolas públicas (ρ = {{CORR_ABAND}}). A Figura 8 mostra que a mediana da média geral cai de 504 pontos nas escolas sem abandono para 479 no decil com maior abandono (≈18%). Como a nota é calculada apenas sobre quem fez a prova, escolas que perdem alunos ao longo do ano tendem a ter também participantes com trajetórias escolares mais frágeis.</p>
+  <figure>
+    <img src="assets/fig3_abandono_hexbin.png" alt="Gráfico hexbin: densidade de escolas públicas por taxa de abandono e média geral, com uma linha de medianas por decil decrescendo de 504 para 479 pontos." loading="lazy">
+    <figcaption><b>Figura 8.</b> Taxa de abandono e média geral nas escolas públicas, 2015. Cor = número de escolas (escala log); linha = mediana por decil de abandono. Fonte: INEP; elaboração própria.</figcaption>
+  </figure>
+
+  <h3>Discussão</h3>
+  <p>Os três resultados convergem para uma leitura: a nota de uma escola no ENEM diz muito sobre <em>quem</em> estuda nela e relativamente pouco sobre <em>onde</em> ela está. A diferença bruta entre redes, estável em torno de 90 pontos, encolhe para um terço quando comparamos escolas de mesmo nível socioeconômico, e desaparece no topo da distribuição, onde escolas federais com processo seletivo competem de igual para igual com as privadas. Isso é consistente com a literatura sobre efeito-escola no Brasil, que atribui a maior parte da variância de desempenho ao nível socioeconômico das famílias (Soares; Alves, 2013), e explica a decisão do INEP de interromper a divulgação de médias por escola: sem o contexto, o número vira um <em>ranking</em> que premia seleção de alunos, não qualidade de ensino.</p>
+  <p>Ao mesmo tempo, os dados mostram margens de ação dentro das escolas: formação docente e retenção de alunos associam-se a notas melhores mesmo após separar as redes. São associações, não causas — escolas com corpo docente mais qualificado podem estar em municípios mais ricos, e o abandono pode ser consequência, e não causa, de um ambiente escolar pouco produtivo — mas apontam para indicadores que gestores públicos podem acompanhar.</p>
+</section>
+
+<section id="conclusao">
+  <h2>4. Conclusão</h2>
+  <p>Este trabalho construiu um pipeline reproduzível para os Microdados do ENEM por Escola e o usou para responder a três perguntas sobre desigualdade educacional. Encontramos (RQ1) uma diferença entre redes pública e privada estável em 86–98 pontos entre 2009 e 2015, com as escolas federais como exceção dentro da rede pública; (RQ2) que o nível socioeconômico é o indicador mais fortemente associado ao desempenho e explica a maior parte da diferença entre redes, com formação docente exercendo associação moderada dentro de cada rede; e (RQ3) que diferenças regionais e urbano/rural são menores que a diferença entre redes, enquanto o abandono escolar se associa negativamente à nota.</p>
+  <p><strong>Limitações.</strong> A base cobre apenas escolas com participação no ENEM e, desde 2015, o INEP não divulga mais médias por escola, o que impede atualizar a série. O INSE só existe para 2015, limitando a análise socioeconômica a um ano. As escalas do ENEM são equalizadas por TRI apenas dentro de cada ano, de modo que comparações entre anos devem ser lidas com cautela. Por fim, trata-se de dados agregados por escola: correlações aqui não implicam relações causais nem valem para alunos individuais (falácia ecológica).</p>
+  <p><strong>Trabalhos futuros.</strong> Cruzar a base com os microdados individuais do ENEM pós-2015 e com o Censo Escolar para reconstruir indicadores por escola; estimar modelos hierárquicos que separem efeito-escola de efeito-aluno; e incorporar a geolocalização das escolas para análises espaciais intra-municipais.</p>
+</section>
+
+<section id="fair">
+  <h2>5. Disponibilidade dos dados e declaração FAIR</h2>
+  <div class="fair">
+    <div><h3>Findable</h3><ul><li>Repositório público com README, palavras-chave e <em>link</em> perene para a fonte no INEP</li><li>Autoria, disciplina, semestre e instituição no cabeçalho dos artefatos</li></ul></div>
+    <div><h3>Accessible</h3><ul><li>Dados brutos e processados versionados no repositório (sem autenticação)</li><li>Artigo publicado via GitHub Pages, responsivo e com tema claro/escuro</li></ul></div>
+    <div><h3>Interoperable</h3><ul><li><code>data/data_dictionary.md</code> descreve cada variável, tipo e domínio</li><li>Base processada em Parquet e CSV.gz (UTF-8)</li></ul></div>
+    <div><h3>Reusable</h3><ul><li>Código sob licença MIT; texto e dados derivados sob CC BY 4.0</li><li><code>requirements.txt</code> com versões congeladas</li></ul></div>
+  </div>
+  <p>Para reproduzir integralmente a análise:</p>
+<pre><code>git clone {{REPO_URL}}.git
+cd enem-escolas-brasil
+python -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -r requirements.txt
+python -m src.etl
+python -m src.figuras
+python -m src.build_artigo
+jupyter nbconvert --execute --to notebook --inplace notebooks/analise_exploratoria.ipynb</code></pre>
+  <p>Os dados originais são de domínio público, produzidos pelo INEP e disponibilizados em <a href="https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/microdados/enem-por-escola" rel="noopener">gov.br/inep — Microdados do ENEM por Escola</a>. Uma cópia do arquivo bruto está em <code>data/raw/MICRODADOS_ENEM_ESCOLA.csv.gz</code> para garantir a reprodutibilidade caso a fonte mude de endereço.</p>
+</section>
+
+<section id="referencias">
+  <h2>6. Referências</h2>
+  <ul class="refs">
+    <li>BRASIL. Instituto Nacional de Estudos e Pesquisas Educacionais Anísio Teixeira. <strong>Microdados do ENEM por Escola 2005–2015</strong>. Brasília: INEP, 2016. Disponível em: https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/microdados/enem-por-escola. Acesso em: 9 nov. 2026.</li>
+    <li>BRASIL. Instituto Nacional de Estudos e Pesquisas Educacionais Anísio Teixeira. <strong>Nota técnica: Indicador de Nível Socioeconômico das Escolas (INSE)</strong>. Brasília: INEP, 2015.</li>
+    <li>BRASIL. Instituto Nacional de Estudos e Pesquisas Educacionais Anísio Teixeira. <strong>Inep não divulgará mais o Enem por escola</strong>. Brasília: INEP, 2016. (Nota à imprensa.)</li>
+    <li>SOARES, J. F.; ALVES, M. T. G. Efeitos de escolas e municípios na qualidade do ensino fundamental. <strong>Cadernos de Pesquisa</strong>, São Paulo, v. 43, n. 149, p. 492–517, 2013.</li>
+    <li>WILKINSON, M. D. et al. The FAIR Guiding Principles for scientific data management and stewardship. <strong>Scientific Data</strong>, v. 3, art. 160018, 2016. DOI: 10.1038/sdata.2016.18.</li>
+    <li>McKINNEY, W. Data structures for statistical computing in Python. In: <strong>Proceedings of the 9th Python in Science Conference</strong>. Austin, 2010. p. 56–61.</li>
+    <li>HUNTER, J. D. Matplotlib: a 2D graphics environment. <strong>Computing in Science &amp; Engineering</strong>, v. 9, n. 3, p. 90–95, 2007.</li>
+    <li>PLOTLY TECHNOLOGIES INC. <strong>Collaborative data science</strong>. Montreal: Plotly, 2015. Disponível em: https://plot.ly. Acesso em: 9 nov. 2026.</li>
+    <li>THE PANDAS DEVELOPMENT TEAM. <strong>pandas-dev/pandas: Pandas</strong>. Versão {{PANDAS_V}}. Zenodo, 2026. DOI: 10.5281/zenodo.3509134.</li>
+  </ul>
+</section>
+
+</main>
+</div>
+
+<footer>Gabryel Duarte Pessanha e Esther Corte Real · Unilasalle · Sistemas de Informação · Professor Alexandre Louzada · Código MIT · Texto e dados CC BY 4.0</footer>
+
+<script type="application/json" id="data-plot1">{{PLOT1}}</script>
+<script type="application/json" id="data-plot2">{{PLOT2}}</script>
+<script type="application/json" id="data-plot3">{{PLOT3}}</script>
+<script type="application/json" id="data-plot4">{{PLOT4}}</script>
+<script type="application/json" id="data-plot5">{{PLOT5}}</script>
+<script>
+(function(){
+  var dark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  var ink = dark ? "#E7EBF0" : "#1C2430";
+  function tema(layout){
+    layout.font = Object.assign({}, layout.font, {color: ink});
+    layout.paper_bgcolor = "rgba(0,0,0,0)"; layout.plot_bgcolor = "rgba(0,0,0,0)";
+    layout.autosize = true;
+    return layout;
+  }
+  ["plot1","plot2","plot3","plot4","plot5"].forEach(function(id){
+    var el = document.getElementById("data-"+id);
+    if(!el) return;
+    try{
+      var fig = JSON.parse(el.textContent);
+      Plotly.newPlot(id, fig.data, tema(fig.layout), {responsive:true, displaylogo:false, locale:"pt-BR",
+        modeBarButtonsToRemove:["lasso2d","select2d"]});
+    }catch(e){
+      document.getElementById(id).innerHTML = "<p style='padding:1rem'>Não foi possível carregar este gráfico interativo. Verifique a conexão para carregar a biblioteca Plotly.</p>";
+    }
+  });
+  var links = document.querySelectorAll("nav.sumario a");
+  if("IntersectionObserver" in window && links.length){
+    var map = {};
+    links.forEach(function(a){ map[a.getAttribute("href").slice(1)] = a; });
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if(en.isIntersecting){ links.forEach(function(a){a.classList.remove("ativo")}); (map[en.target.id]||{}).classList && map[en.target.id].classList.add("ativo"); } });
+    }, {rootMargin:"-30% 0px -60% 0px"});
+    Object.keys(map).forEach(function(id){ var s=document.getElementById(id); if(s) io.observe(s); });
+  }
+})();
+</script>
+</body>
+</html>
